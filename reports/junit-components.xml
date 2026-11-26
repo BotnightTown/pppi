@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="5" failures="0" errors="0" time="0.971">
+  <testsuite name="Smoke: SearchBar" errors="0" failures="0" skipped="0" timestamp="2026-11-26T10:10:39" time="0.496" tests="5">
+    <testcase classname="Smoke: SearchBar форма пошуку веде на /catalog і має поле q" name="Smoke: SearchBar форма пошуку веде на /catalog і має поле q" time="0.034">
+    </testcase>
+    <testcase classname="Smoke: LoginForm форма входу містить email, пароль і кнопку відправки" name="Smoke: LoginForm форма входу містить email, пароль і кнопку відправки" time="0.015">
+    </testcase>
+    <testcase classname="Smoke: RegisterForm форма реєстрації містить ім&apos;я, email, пароль і кнопку відправки" name="Smoke: RegisterForm форма реєстрації містить ім&apos;я, email, пароль і кнопку відправки" time="0.008">
+    </testcase>
+    <testcase classname="Smoke: статичні блоки макета Footer рендериться як contentinfo з посиланнями" name="Smoke: статичні блоки макета Footer рендериться як contentinfo з посиланнями" time="0.071">
+    </testcase>
+    <testcase classname="Smoke: статичні блоки макета Hero рендериться із заголовком і посиланням" name="Smoke: статичні блоки макета Hero рендериться із заголовком і посиланням" time="0.014">
+    </testcase>
+  </testsuite>
+</testsuites>
