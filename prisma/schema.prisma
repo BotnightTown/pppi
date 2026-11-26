@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum Gender {
+  WOMEN
+  MEN
+  UNISEX
+}
+
+enum FragranceType {
+  PARFUM
+  EAU_DE_PARFUM
+  EAU_DE_TOILETTE
+  EAU_DE_COLOGNE
+}
+
+enum StockStatus {
+  IN_STOCK
+  OUT_OF_STOCK
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum DeliveryMethod {
+  NOVA_POSHTA
+  UKRPOSHTA
+  COURIER
+}
+
+enum PaymentMethod {
+  CARD
+  CASH_ON_DELIVERY
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  phone        String?
+  address      String?
+  role         Role       @default(CUSTOMER)
+  createdAt    DateTime   @default(now())
+  orders       Order[]
+  reviews      Review[]
+  favorites    Favorite[]
+}
+
+model Brand {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  perfumes    Perfume[]
+}
+
+model Perfume {
+  id             Int           @id @default(autoincrement())
+  name           String
+  brandId        Int
+  brand          Brand         @relation(fields: [brandId], references: [id])
+  description    String
+  fragranceNotes Json // { top: [], heart: [], base: [] }
+  volume         Int // мл
+  gender         Gender
+  fragranceType  FragranceType
+  price          Decimal       @db.Decimal(10, 2)
+  stockStatus    StockStatus   @default(IN_STOCK)
+  images         String[]
+  createdAt      DateTime      @default(now())
+  orderItems     OrderItem[]
+  reviews        Review[]
+  favorites      Favorite[]
+
+  @@index([brandId])
+  @@index([gender, fragranceType])
+}
+
+model PromoCode {
+  id              Int      @id @default(autoincrement())
+  code            String   @unique
+  discountPercent Int?
+  discountAmount  Decimal? @db.Decimal(10, 2)
+  isActive        Boolean  @default(true)
+  orders          Order[]
+}
+
+model Order {
+  id              Int            @id @default(autoincrement())
+  userId          String
+  user            User           @relation(fields: [userId], references: [id])
+  status          OrderStatus    @default(PENDING)
+  totalPrice      Decimal        @db.Decimal(10, 2)
+  promoCodeId     Int?
+  promoCode       PromoCode?     @relation(fields: [promoCodeId], references: [id])
+  deliveryMethod  DeliveryMethod
+  deliveryAddress String
+  phone           String
+  paymentMethod   PaymentMethod
+  paymentStatus   PaymentStatus  @default(UNPAID)
+  createdAt       DateTime       @default(now())
+  items           OrderItem[]
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  perfumeId Int
+  perfume   Perfume @relation(fields: [perfumeId], references: [id])
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2) // ціна на момент замовлення
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  perfumeId Int
+  perfume   Perfume  @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
+  rating    Int // 1–5, перевірка у застосунку
+  comment   String?
+  createdAt DateTime @default(now())
+
+  @@unique([userId, perfumeId])
+}
+
+model Favorite {
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  perfumeId Int
+  perfume   Perfume @relation(fields: [perfumeId], references: [id], onDelete: Cascade)
+
+  @@id([userId, perfumeId])
+}
