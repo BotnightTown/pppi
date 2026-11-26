@@ -31,7 +31,10 @@ async function ProfileContent() {
     { label: "Email", value: user.email },
     { label: "Телефон", value: user.phone ?? "не вказано" },
     { label: "Адреса", value: user.address ?? "не вказано" },
-    { label: "Роль", value: user.role === "ADMIN" ? "Адміністратор" : "Покупець" },
+    {
+      label: "Роль",
+      value: user.role === "ADMIN" ? "Адміністратор" : "Покупець",
+    },
     {
       label: "Дата реєстрації",
       value: user.createdAt.toLocaleDateString("uk-UA", {
@@ -46,7 +49,8 @@ async function ProfileContent() {
     <div className="space-y-6">
       <div className="rounded-2xl border border-stone-200 bg-white p-6 sm:p-8">
         <p className="mb-6 text-sm text-stone-600">
-          Вітаємо, <span className="font-medium text-stone-900">{user.name}</span>!
+          Вітаємо,{" "}
+          <span className="font-medium text-stone-900">{user.name}</span>!
         </p>
         <dl className="divide-y divide-stone-100">
           {rows.map((r) => (
@@ -59,7 +63,7 @@ async function ProfileContent() {
       </div>
 
       <div className="rounded-2xl border border-dashed border-stone-300 p-6 text-center text-sm text-stone-500">
-        Історія замовлень з'явиться тут пізніше.
+        Історія замовлень з’явиться тут пізніше.
       </div>
 
       <form action={logoutAction}>
