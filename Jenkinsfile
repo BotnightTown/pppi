@@ -1,6 +1,10 @@
 
-def run(String cmd) {
-  if (isUnix()) { sh cmd } else { bat cmd }
+def runCmd(String cmd) {
+  if (isUnix()) {
+    sh cmd
+  } else {
+    bat cmd
+  }
 }
 
 pipeline {
@@ -9,7 +13,6 @@ pipeline {
   tools { nodejs 'node22' }
 
   options {
-    timestamps()
     timeout(time: 20, unit: 'MINUTES')
     buildDiscarder(logRotator(numToKeepStr: '20'))
   }
@@ -22,33 +25,34 @@ pipeline {
   }
 
   stages {
-    stage('Checkout') {
-      steps { checkout scm }
-    }
-
     stage('Install') {
       steps {
-        run 'npm ci'
-        run 'npx prisma generate'
+        runCmd('npm ci')
+        runCmd('npx prisma generate')
       }
     }
 
     stage('Lint') {
-      steps { run 'npm run lint' }
+      steps {
+        runCmd('npm run lint')
+      }
     }
 
     stage('Component tests') {
-      steps { run 'npm run test:components' }
+      steps {
+        runCmd('npm run test:components')
+      }
       post {
         always {
-          // Результати Jest (jest-junit) завжди потрапляють у звіт, навіть при падінні тестів.
           junit allowEmptyResults: true, testResults: 'reports/junit-components.xml'
         }
       }
     }
 
     stage('Build') {
-      steps { run 'npm run build' }
+      steps {
+        runCmd('npm run build')
+      }
     }
 
     stage('Smoke') {
@@ -56,7 +60,9 @@ pipeline {
         SMOKE_PORT  = '3100'
         SMOKE_PATHS = '/'
       }
-      steps { run 'npm run test:smoke' }
+      steps {
+        runCmd('npm run test:smoke')
+      }
       post {
         always {
           junit allowEmptyResults: true, testResults: 'reports/smoke-junit.xml'
@@ -69,7 +75,11 @@ pipeline {
     always {
       archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
     }
-    success { echo 'Усі етапи пройшли успішно.' }
-    failure { echo 'Збірка впала: подробиці дивіться в Console Output і Test Result.' }
+    success {
+      echo 'Усі етапи пройшли успішно.'
+    }
+    failure {
+      echo 'Збірка впала: подробиці дивіться в Console Output і Test Result.'
+    }
   }
 }
